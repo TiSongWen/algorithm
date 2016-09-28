@@ -1,18 +1,22 @@
 /**
- * 01 背包问题
+ * 背包问题(增加记忆化搜索)
  */
+
 #include <stdio.h>
 
 #define MAX_N 100
+#define MAX_W 10000
 
 int rec(int, int);
 
+int mem[MAX_N][MAX_W] = {0}; // 增加记忆化
 
 int n = 0;
 int a[MAX_N][2] = {0};
 int W = 0;
 
 int getMaxResult(void) {
+	memset(a, -1, sizeof(a));
 	return rec(0, W);
 }
 
@@ -21,21 +25,21 @@ int max(int a, int b) {
 }
 
 int rec(int num, int w) {
-	int weight = 0;
-	int value  = 0;
-
 	if (num == n) {
-		return 0;
+		return (mem[num][w] = 0);
+	}
+	if (mem[num][w] >= 0) {
+		return mem[num][w];
 	}
 
-	weight = a[num][0];
-	value  = a[num][1];
+	int weight = a[num][0];
+	int value  = a[num][1];
 
 	if (weight > w) {
-		return rec(num + 1, w);
+		return (mem[num][w] = rec(num + 1, w));
 	} else {
-		return max (rec(num + 1, w - weight) + value, 
-			rec(num + 1, w));
+		return (mem[num][w] = max (rec(num + 1, w - weight) + value, 
+			rec(num + 1, w)));
 	} 
 }
 
