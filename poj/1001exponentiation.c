@@ -63,7 +63,7 @@ static void transferOutput(int *str) {
     puts("");
 }
 
-void entry() {
+void entry1001() {
     char str[COL];
     int j;
 

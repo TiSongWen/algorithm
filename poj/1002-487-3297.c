@@ -14,7 +14,7 @@ static int  n;
 
 static int repeat[MAX];
 
-int main(void) {
+void entry1002(void) {
     char s[LENGTH];
     int i = 0, j = 0, z = 0;
     int flag = 0;
