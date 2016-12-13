@@ -123,19 +123,20 @@ public class ProgramTest2 {
 
 
         N min = null;
-
+        N n = null;
         // 一共3500000数据, 每次可排70000，共循环50次
         while(true) {
             // 懒惰删除 - 1 ~ pqLen, 平移却无法保证其有序性，所以树的结构必须变动
-            min = MinPQ.deleteMin();
+            min = MinPQ.min();
             out.println(min.s);
 
             if (flags[min.j]) {
+                MinPQ.deleteMin();
                 continue;
             }
 
             if ((s = rs[min.j].readLine()).length() > 5) {
-                MinPQ.insert(new N(s, min.j));
+                n = new N(s, min.j);
             } else {
                 // 一个循环 num (7)次的操作
                 flags[min.j] = true;
@@ -143,7 +144,8 @@ public class ProgramTest2 {
                 if (countFlag == num) break;
             }
 
-
+            MinPQ.deleteMinRel(n);
+            n = null;
 //            for (int i = 1; i <= pqLen; i++) {
 //                // 获取前pqLen小的数, 该操作会循环3500000万次
 //                min = MinPQ.deleteMin();
@@ -390,10 +392,23 @@ public class ProgramTest2 {
             return pq[1];
         }
 
+        public static N min() {
+            return pq[1];
+        }
+
+
+        // 延迟删除
+        public static N deleteMinRel(N n) {
+            N min = pq[1];
+            pq[1] = n;
+            sink(1);
+            return min;
+        }
+
         public static N deleteMin() {
             N min = pq[1];
             exch(1, size--);
-            pq[size+1] = null;
+            pq[size + 1] = null;
             sink(1);
             return min;
         }
@@ -438,21 +453,21 @@ public class ProgramTest2 {
 
     }
 
-//    public static void main(String[] args) throws Exception {
-//        long dir = 0L;
-//        dir = System.currentTimeMillis();
-//        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input1.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
-//                new File("/home/tisong/CodeWorld/javatest/data/temp.data"));
-//
-////        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File("/home/tisong/CodeWorld/javatest/data/input1.data"))));
-////        RandomAccessFile r = new RandomAccessFile(new File("/home/tisong/CodeWorld/javatest/data/input.data"), "r");
-////        for (int i = 0; i < 350; i++) {
-////            String s = null;
-////            while ((s = r.readLine()) != null) {
-////                out.println(s);
-////            }
-////            r.seek(0);
-////        }
-//        System.out.println((System.currentTimeMillis() - dir));
-//    }
+    public static void main(String[] args) throws Exception {
+        long dir = 0L;
+        dir = System.currentTimeMillis();
+        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input1.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
+                new File("/home/tisong/CodeWorld/javatest/data/temp.data"));
+
+//        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File("/home/tisong/CodeWorld/javatest/data/input1.data"))));
+//        RandomAccessFile r = new RandomAccessFile(new File("/home/tisong/CodeWorld/javatest/data/input.data"), "r");
+//        for (int i = 0; i < 350; i++) {
+//            String s = null;
+//            while ((s = r.readLine()) != null) {
+//                out.println(s);
+//            }
+//            r.seek(0);
+//        }
+        System.out.println((System.currentTimeMillis() - dir));
+    }
 }
