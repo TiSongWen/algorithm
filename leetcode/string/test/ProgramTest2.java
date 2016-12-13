@@ -17,17 +17,16 @@ public class ProgramTest2 {
         int offset = 10000;
         int count = 0;
         int num = 0;
-        //N[] ll = new N[length];
         String[][] ll = new String[length][2];
         long[] t = new long[10];
-        t[0] = 0;   // 起始位置与结束位置
-        num++;
 
-        int size = 0;
+        t[num++] = 0;   // 起始位置与结束位置
+
+        int size = 0;  // 分块文件大小
 
         char[] sb = new char[10];
 
-        int sbSize = 0;
+        int sbSize = 0;  // 文件大小
         while ((s = in.readLine()) != null) {
             sbSize = 0;
             for (int i = 0; s.charAt(i) != ','; i++) {
@@ -64,10 +63,9 @@ public class ProgramTest2 {
 
         // 资源回收
         ll = null;
-        in.close();
         temp.close();
-        in = null;
-        temp = null;
+
+
         RandomAccessFile[] rs = new RandomAccessFile[num];
         for (int i = 0; i < num; i++) {
             rs[i] = new RandomAccessFile(tempFile, "r");
@@ -75,86 +73,111 @@ public class ProgramTest2 {
         }
 
 
-        int pqLen = (length - offset) / num;   // pqLen = 70000
-        MinPQ.pq = new N[length - offset + 1];
+//        int pqLen = (length - offset) / num;   // pqLen = 70000
+//        MinPQ.pq = new N[length - offset + 1];
+//        // 第一次多路填充并归并
+//        for (int i = 0; i < pqLen; i++) {
+//            for (int j = 0; j < num; j++) {
+//                N n = new N(rs[j].readLine(), j);
+//                MinPQ.insert(n);
+//            }
+//        }
+
+        MinPQ.pq = new N[length / 2 + 1];
+        MinPQ.pq[0] = new N();
+
+
+        // System.out.println("num is: " + num);
         // 第一次多路填充并归并
-        for (int i = 0; i < pqLen; i++) {
+        for (int i = 0; i < length / (2 * num); i++) {
             for (int j = 0; j < num; j++) {
                 N n = new N(rs[j].readLine(), j);
-                MinPQ.insert(n);
+//                MinPQ.insert(n);
+                MinPQ.pq[++MinPQ.size] = n;
             }
         }
 
+        while (MinPQ.size != MinPQ.pq.length - 1) {
+            int dir = MinPQ.pq.length - MinPQ.size - 1;
+            for (int j = 0; j < dir; j++) {
+                MinPQ.pq[++MinPQ.size] = new N(rs[j].readLine(), j);
+            }
+        }
+        Quick3stringN.sort(MinPQ.pq);
+
+
         boolean[] flags = new boolean[num];   // 标志位，标志该路是否读取完毕 true-完毕
-        int[] countNum = new int[num];        //
+       // int[] countNum = new int[num];        //
         for (int i = 0; i < num; i++) {
             flags[i] = false;
-            countNum[i] = 0;
+           // countNum[i] = 0;
         }
+
         int countFlag = 0;    // 当前已读取完毕的路数
 
 
         N min = null;
-        int test = 0;
-        int ttt = 0;
-        int[] ttttt = new int[num];
-        for (int i = 0; i < num; i++) {
-            ttttt[i] = 0;
-        }
 
-        end:
+        // 一共3500000数据, 每次可排70000，共循环50次
         while(true) {
-            ttt++;
             // 懒惰删除 - 1 ~ pqLen, 平移却无法保证其有序性，所以树的结构必须变动
-            for (int i = 1; i <= pqLen && MinPQ.size > 0; i++) {
-                // 获取前pqLen小的数
-                min = MinPQ.deleteMin();
-                test++;
-                if (min == null) {
-                    System.out.println(test);
-                    out.println(min);
-                }
-                out.println(min.s);
-                if (min.j > 7) {
-                    countNum[min.j]++;
-                }
-                countNum[min.j]++;
+            min = MinPQ.deleteMin();
+            out.println(min.s);
+
+            if (flags[min.j]) {
+                continue;
             }
 
-            int sum = 0;
-            for (int i = 0; i < num; i++) {
-                sum += countNum[i];
+            if ((s = rs[min.j].readLine()).length() > 5) {
+                MinPQ.insert(new N(s, min.j));
+            } else {
+                // 一个循环 num (7)次的操作
+                flags[min.j] = true;
+                countFlag++;
+                if (countFlag == num) break;
             }
-            System.out.println("第" + ttt + "次消耗数: " + sum);
+
+
+//            for (int i = 1; i <= pqLen; i++) {
+//                // 获取前pqLen小的数, 该操作会循环3500000万次
+//                min = MinPQ.deleteMin();
+//                out.println(min.s);
+//                countNum[min.j]++;
+//            }
+
+//            int sum = 0;
+//            for (int i = 0; i < num; i++) {
+//                sum += countNum[i];
+//            }
+            //System.out.println("第" + ttt + "次消耗数: " + sum);
 
             // 各路重新读取
-            for (int i = 0; i < num ; i++) {
-                if (flags[i]) {
-                    // 该路已经读取完毕
-                    continue;
-                }
-                while(countNum[i] > 0) { // 检测该路的消耗数是否大于0
-                    if ( (s = rs[i].readLine()).length() > 5 ) { // 检测该路在读取过程中是否终止
-                        countNum[i]--;
-                        ttttt[i]++;
-                        MinPQ.insert(new N(s, i));
-                    } else {
-                        // 遇到终止符
-                        flags[i] = true;
-                        countFlag++;
-                        countNum[i] = 0; // 消耗数已经没有意义, 清空
-                        //  检测所有源读取完毕
-                        if (countFlag == num)
-                            break end;
-                        break;
-                    }
-                }
-            }
+//            for (int i = 0; i < num ; i++) {
+//                // 该外循环会执行 7 * 50 次
+//                if (flags[i]) {
+//                    // 该路已经读取完毕
+//                    continue;
+//                }
+//                while(countNum[i] > 0) { // 检测该路的消耗数是否大于0
+//                    // 该循环会执行 3000000万次
+//                    if ( (s = rs[i].readLine()).length() > 5 ) { // 检测该路在读取过程中是否终止
+//                        countNum[i]--;
+//                        MinPQ.insert(new N(s, i));
+//                    } else {
+//                        // 遇到终止符
+//                        flags[i] = true;
+//                        countFlag++;
+//                        countNum[i] = 0; // 消耗数已经没有意义, 清空
+//                        //  检测所有源读取完毕
+//                        if (countFlag == num)
+//                            break end;
+//                        break;
+//                    }
+//                }
+//                countNum[i] = 0;
+//            }
+           // System.out.println("第" + ttt +"次填充后堆的数量" + MinPQ.size);
 
-            for (int i = 0; i < num; i++) {
-                countNum[i] = 0;
-            }
-            System.out.println("第" + ttt +"次填充后堆的数量" + MinPQ.size);
         }
 
 
@@ -162,7 +185,7 @@ public class ProgramTest2 {
             out.println(MinPQ.deleteMin().s);
         }
 
-
+        in.close();
         out.close();
         for (int i = 0; i < num; i++) {
             rs[i].close();
@@ -235,10 +258,80 @@ public class ProgramTest2 {
 
     }
 
+    private static class Quick3stringN {
+        private static final int CUTOFF =  15;   // 插入排序的阈值
+
+        private Quick3stringN() { }
+
+        public static void sort(N[] a) {
+            sort(a, 0, a.length-1, 0);
+        }
+
+        private static int charAt(String s, int d) {
+            if (d == s.length()) return -1;
+            return s.charAt(d);
+        }
+
+
+        private static void sort(N[] a, int lo, int hi, int d) {
+            if (hi <= lo + CUTOFF) {
+                insertion(a, lo, hi, d);
+                return;
+            }
+
+            int lt = lo, gt = hi;
+            int v = charAt(a[lo].t, d);
+            int i = lo + 1;
+            while (i <= gt) {
+                int t = charAt(a[i].t, d);
+                if      (t < v) exch(a, lt++, i++);
+                else if (t > v) exch(a, i, gt--);
+                else              i++;
+            }
+
+            // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi].
+            sort(a, lo, lt-1, d);
+            if (v >= 0) sort(a, lt, gt, d+1);
+            sort(a, gt+1, hi, d);
+        }
+
+        private static void insertion(N[] a, int lo, int hi, int d) {
+            for (int i = lo; i <= hi; i++)
+                for (int j = i; j > lo && less(a[j], a[j-1], d); j--)
+                    exch(a, j, j-1);
+        }
+
+        //交换
+        private static void exch(N[] a, int i, int j) {
+            N temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+        }
+
+        private static boolean less(N v, N w, int d) {
+            for (int i = d; i < Math.min(v.t.length(), w.t.length()); i++) {
+                if (v.t.charAt(i) < w.t.charAt(i)) return true;
+                if (v.t.charAt(i) > w.t.charAt(i)) return false;
+            }
+            return v.t.length() < w.t.length();
+        }
+
+        // 判断数组是否有序
+        private static boolean isSorted(N[] a) {
+            for (int i = 1; i < a.length; i++)
+                if (a[i].t.compareTo(a[i-1].t) < 0) return false;
+            return true;
+        }
+
+    }
     private static class N {
         String s;
         String t;
         int    j; // 所属哪一路
+        public N() {
+            this.t = "";
+        }
+
         public N (String s) {
             this.s = s;
             StringBuffer sb = new StringBuffer();
@@ -247,6 +340,7 @@ public class ProgramTest2 {
             }
             t = sb.toString();
         }
+
 
         public N(String s, int j) {
             this(s);
@@ -338,21 +432,21 @@ public class ProgramTest2 {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        long dir = 0L;
-        dir = System.currentTimeMillis();
-        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input1.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
-                new File("/home/tisong/CodeWorld/javatest/data/temp.data"));
-
-//        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File("/home/tisong/CodeWorld/javatest/data/input1.data"))));
-//        RandomAccessFile r = new RandomAccessFile(new File("/home/tisong/CodeWorld/javatest/data/input.data"), "r");
-//        for (int i = 0; i < 350; i++) {
-//            String s = null;
-//            while ((s = r.readLine()) != null) {
-//                out.println(s);
-//            }
-//            r.seek(0);
-//        }
-        System.out.println((System.currentTimeMillis() - dir));
-    }
+//    public static void main(String[] args) throws Exception {
+//        long dir = 0L;
+//        dir = System.currentTimeMillis();
+//        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input1.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
+//                new File("/home/tisong/CodeWorld/javatest/data/temp.data"));
+//
+////        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File("/home/tisong/CodeWorld/javatest/data/input1.data"))));
+////        RandomAccessFile r = new RandomAccessFile(new File("/home/tisong/CodeWorld/javatest/data/input.data"), "r");
+////        for (int i = 0; i < 350; i++) {
+////            String s = null;
+////            while ((s = r.readLine()) != null) {
+////                out.println(s);
+////            }
+////            r.seek(0);
+////        }
+//        System.out.println((System.currentTimeMillis() - dir));
+//    }
 }
