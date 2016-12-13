@@ -137,15 +137,17 @@ public class ProgramTest2 {
 
             if ((s = rs[min.j].readLine()).length() > 5) {
                 n = new N(s, min.j);
+                MinPQ.deleteMinRel(n);
+                n = null;
             } else {
                 // 一个循环 num (7)次的操作
                 flags[min.j] = true;
                 countFlag++;
+                MinPQ.deleteMin();
                 if (countFlag == num) break;
             }
 
-            MinPQ.deleteMinRel(n);
-            n = null;
+
 //            for (int i = 1; i <= pqLen; i++) {
 //                // 获取前pqLen小的数, 该操作会循环3500000万次
 //                min = MinPQ.deleteMin();
@@ -188,10 +190,10 @@ public class ProgramTest2 {
 
         }
 
-
-        while(MinPQ.size != 0) {
-            out.println(MinPQ.deleteMin().s);
-        }
+//
+//        while(MinPQ.size != 0) {
+//            out.println(MinPQ.deleteMin().s);
+//        }
 
         in.close();
         out.close();
@@ -456,7 +458,7 @@ public class ProgramTest2 {
     public static void main(String[] args) throws Exception {
         long dir = 0L;
         dir = System.currentTimeMillis();
-        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input1.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
+        ProgramTest2.test(new File("/home/tisong/CodeWorld/javatest/data/input.data"), new File("/home/tisong/CodeWorld/javatest/data/output.data"),
                 new File("/home/tisong/CodeWorld/javatest/data/temp.data"));
 
 //        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File("/home/tisong/CodeWorld/javatest/data/input1.data"))));
