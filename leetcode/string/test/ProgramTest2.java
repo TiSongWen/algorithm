@@ -89,21 +89,27 @@ public class ProgramTest2 {
 
         // System.out.println("num is: " + num);
         // 第一次多路填充并归并
-        for (int i = 0; i < length / (2 * num); i++) {
-            for (int j = 0; j < num; j++) {
-                N n = new N(rs[j].readLine(), j);
-//                MinPQ.insert(n);
-                MinPQ.pq[++MinPQ.size] = n;
-            }
+//        for (int i = 0; i < length / (2 * num); i++) {
+//            for (int j = 0; j < num; j++) {
+//                N n = new N(rs[j].readLine(), j);
+////                MinPQ.insert(n);
+//                MinPQ.pq[++MinPQ.size] = n;
+//            }
+//        }
+//
+//        while (MinPQ.size != MinPQ.pq.length - 1) {
+//            int dir = MinPQ.pq.length - MinPQ.size - 1;
+//            for (int j = 0; j < dir; j++) {
+//                MinPQ.pq[++MinPQ.size] = new N(rs[j].readLine(), j);
+//            }
+//        }
+//        Quick3stringN.sort(MinPQ.pq);
+
+        MinPQ.pq = new N[num + 1]; // 数字
+        for (int i = 0; i < num; i++) {
+            MinPQ.insert(new N(rs[i].readLine(), i));
         }
 
-        while (MinPQ.size != MinPQ.pq.length - 1) {
-            int dir = MinPQ.pq.length - MinPQ.size - 1;
-            for (int j = 0; j < dir; j++) {
-                MinPQ.pq[++MinPQ.size] = new N(rs[j].readLine(), j);
-            }
-        }
-        Quick3stringN.sort(MinPQ.pq);
 
 
         boolean[] flags = new boolean[num];   // 标志位，标志该路是否读取完毕 true-完毕
