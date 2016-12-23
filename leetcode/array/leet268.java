@@ -24,7 +24,6 @@ public class leet268 {
             } else {
                 return nums[nums.length-1] + 1;
             }
-
         }
     }
 }
