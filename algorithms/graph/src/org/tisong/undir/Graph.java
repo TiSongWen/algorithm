@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tisong on 12/15/16.
+ * 无向图API设计，基于邻接链表 数组 + 链表的实现方式
  */
 public class Graph {
 
