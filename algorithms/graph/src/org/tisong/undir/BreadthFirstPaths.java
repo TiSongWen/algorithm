@@ -14,13 +14,33 @@ public class BreadthFirstPaths {
 
     private boolean[] marked;
 
+    /**
+     * 每个顶点到起点的最小距离, MAX_VALUE则表示不可达到
+     */
+    private int[] minDist;
+    /**
+     * 起点
+     */
     private int s;
 
     public BreadthFirstPaths(Graph G, int s) {
         this.s = s;
         marked = new boolean[G.V()];
         edgeTo  = new int[G.V()];
+        minDist = new int[G.V()];
+        for (int i = 0; i < G.V(); i++) {
+            minDist[i] = Integer.MAX_VALUE;
+        }
+        minDist[s] = 0;
         bfs(G, s);
+
+        for (int i = 0; i < G.V(); i++) {
+            int dist = 0;
+            for (int j = i; j != s; j = edgeTo[j]) {
+                dist++;
+            }
+            minDist[i] = dist;
+        }
     }
 
     private void bfs(Graph G, int s) {
@@ -29,6 +49,7 @@ public class BreadthFirstPaths {
         queue.add(s);
         while(!queue.isEmpty()) {
             int v = queue.remove();
+
             for (int w : G.adj(v)) {
                 if (!marked[w]) {
                     marked[w] = true;
@@ -54,5 +75,14 @@ public class BreadthFirstPaths {
         }
         paths.push(s);
         return paths;
+    }
+
+    /**
+     * 顶点v 到起点s的最短距离
+     * @param v
+     * @return
+     */
+    public int distTo(int v) {
+        return minDist[v];
     }
 }
