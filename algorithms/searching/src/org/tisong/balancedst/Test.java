@@ -25,6 +25,7 @@ public class Test {
         String args = expression.substring(i, expression.length()-1);
         int parenLevel = 0;
         String curSubArg = "";
+        // 再次递归的思想
         for (int c=0; c<args.length(); c++) {
             if (args.charAt(c)==',' && parenLevel == 0) {
                 functionName += infer(curSubArg, definitions) + ",";
