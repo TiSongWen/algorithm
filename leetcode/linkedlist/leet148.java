@@ -13,6 +13,11 @@ public class leet148 {
         ListNode(int x) {val = x;}
     }
 
+    /**
+     * 链表的归并排序实现
+     * @param head
+     * @return
+     */
     public ListNode sortList(ListNode head) {
         return mergeSort(head);
     }
