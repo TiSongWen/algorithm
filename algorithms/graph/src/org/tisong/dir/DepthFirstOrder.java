@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 /**
- * Created by tisong on 1/13/17.
+ * 有向图中基于深度搜索的顶点排序
  */
 public class DepthFirstOrder {
 
